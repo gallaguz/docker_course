@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const axios = require("axios");
 
 const { port, host, db, authApiUrl } = require("./configuration");
 const { connectDb } = require("./helpers/db");
@@ -15,18 +16,29 @@ app.get("/test", (req, res) => {
     res.send("Our api server is working correctly...");
 });
 
-app.get('/testWithCurrentUser', (req, res) => {
-    console.log('authApiUrl', authApiUrl);
+app.get("/testApiData", (req, res) => {
     res.json({
-        testWithCurrentUser: true
-    })
+        testApiData: true
+    });
+});
+
+app.get('/testWithCurrentUser', (req, res) => {
+    axios.get(authApiUrl + "/currentUser").then(response => {
+        res.json({
+            testWithCurrentUser: true,
+            currentUserFromAuth: response.data
+        });
+    }).catch((e)=> {
+        console.log(e)
+    });
 })
 
 const startServer = () => {
     app.listen(port, () => {
-        console.log(`Started api at: http://localhost:${port}`);
-        console.log(`host: ${host}`);
-        console.log(`DB: ${db}`);
+        console.log(`Started api service on port ${port}`);
+        console.log(`Our host is ${host}`);
+        console.log(`Database url ${db}`);
+        console.log(`Auth api url ${authApiUrl}`);
     });
 
     const silence = new Post({ name: "Silence" });

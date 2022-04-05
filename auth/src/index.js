@@ -1,12 +1,21 @@
 const express = require("express");
+const axios = require("axios");
 
-const { port, host, db } = require("./configuration");
+const { port, host, db, apiUrl } = require("./configuration");
 const { connectDb } = require("./helpers/db");
 
 const app = express();
 
 app.get("/test", (req, res) => {
     res.send("Our auth server is working correctly...");
+});
+
+app.get("/testApiData", (req, res) => {
+    axios.get(apiUrl + "/testApiData").then(response => {
+        res.json({
+            testApiData: response.data.testApiData
+        });
+    });
 });
 
 app.get("/api/currentUser", (req, res) => {
@@ -18,9 +27,9 @@ app.get("/api/currentUser", (req, res) => {
 
 const startServer = () => {
     app.listen(port, () => {
-        console.log(`Started auth at: http://llocalhost:${port}`);
-        console.log(`host: ${host}`);
-        console.log(`DB: ${db}`);
+        console.log(`Started authentication service on port ${port}`);
+        console.log(`Our host is ${host}`);
+        console.log(`Database url ${db}`);
     });
 };
 
